@@ -35,10 +35,8 @@ cron "10 * * * *" script-path=jd_dreamFactory.js,tag=京喜工厂
 
 const $ = new Env('京喜工厂');
 const JD_API_HOST = 'https://m.jingxi.com';
-const helpAu = true; //帮作者助力 免费拿活动
 const notify = $.isNode() ? require('./sendNotify') : '';
 let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
-const randomCount = $.isNode() ? 20 : 5;
 let tuanActiveId = ``, hasSend = false;
 const jxOpenUrl = `openjd://virtual?params=%7B%20%22category%22:%20%22jump%22,%20%22des%22:%20%22m%22,%20%22url%22:%20%22https://wqsd.jd.com/pingou/dream_factory/index.html%22%20%7D`;
 let cookiesArr = [], cookie = '', message = '', allMessage = '';
@@ -128,7 +126,6 @@ async function jdDreamFactory() {
   try {
     await userInfo();
     await QueryFriendList();//查询今日招工情况以及剩余助力次数
-    // await joinLeaderTuan();//参团
     await helpFriends();
     if (!$.unActive) return
     // await collectElectricity()
@@ -966,20 +963,7 @@ async function tuanActivity() {
     }
   }
 }
-async function joinLeaderTuan() {
-  let res = await updateTuanIdsCDN(), res2 = await updateTuanIdsCDN("http://cdn.annnibb.me/factory.json")
-  if (!res) res = await updateTuanIdsCDN('https://cdn.jsdelivr.net/gh/gitupdate/updateTeam@master/shareCodes/jd_updateFactoryTuanId.json');
-  $.authorTuanIds = [...(res && res.tuanIds || []),...(res2 && res2.tuanIds || [])]
-  if ($.authorTuanIds && $.authorTuanIds.length) {
-    for (let tuanId of $.authorTuanIds) {
-      if (!tuanId) continue
-      if (!$.canHelp) break;
-      console.log(`\n账号${$.UserName} 参加作者的团 【${tuanId}】`);
-      await JoinTuan(tuanId);
-      await $.wait(1000);
-    }
-  }
-}
+
 //可获取开团后的团ID，如果团ID为空并且surplusOpenTuanNum>0，则可继续开团
 //如果团ID不为空，则查询QueryTuan()
 function QueryActiveConfig() {
@@ -1197,45 +1181,6 @@ function tuanAward(activeId, tuanId, isTuanLeader = true) {
   })
 }
 
-function updateTuanIdsCDN(url = 'https://raw.githubusercontent.com/gitupdate/updateTeam/master/shareCodes/jd_updateFactoryTuanId.json') {
-  return new Promise(async resolve => {
-    const options = {
-      url: `${url}?${new Date()}`, "timeout": 10000, headers: {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/87.0.4280.88"
-      }
-    };
-    if ($.isNode() && process.env.TG_PROXY_HOST && process.env.TG_PROXY_PORT) {
-      const tunnel = require("tunnel");
-      const agent = {
-        https: tunnel.httpsOverHttp({
-          proxy: {
-            host: process.env.TG_PROXY_HOST,
-            port: process.env.TG_PROXY_PORT * 1
-          }
-        })
-      }
-      Object.assign(options, { agent })
-    }
-    $.get(options, (err, resp, data) => {
-      try {
-        if (err) {
-          // console.log(`${JSON.stringify(err)}`)
-        } else {
-          if (safeGet(data)) {
-            $.tuanConfigs = data = JSON.parse(data);
-          }
-        }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve(data);
-      }
-    })
-    await $.wait(20000)
-    resolve();
-  })
-}
-
 //商品可兑换时的通知
 async function exchangeProNotify() {
   await GetShelvesList();
@@ -1320,21 +1265,7 @@ function requireConfig() {
   return new Promise(async resolve => {
     tuanActiveId = $.isNode() ? (process.env.TUAN_ACTIVEID || tuanActiveId) : ($.getdata('tuanActiveId') || tuanActiveId);
     if (!tuanActiveId) {
-      await updateTuanIdsCDN();
-      if ($.tuanConfigs && $.tuanConfigs['tuanActiveId']) {
-        tuanActiveId = $.tuanConfigs['tuanActiveId'];
-        console.log(`拼团活动ID: 获取成功 ${tuanActiveId}\n`)
-      } else {
-        if (!$.tuanConfigs) {
-          await updateTuanIdsCDN('https://cdn.jsdelivr.net/gh/gitupdate/updateTeam@master/shareCodes/jd_updateFactoryTuanId.json');
-          if ($.tuanConfigs && $.tuanConfigs['tuanActiveId']) {
-            tuanActiveId = $.tuanConfigs['tuanActiveId'];
-            console.log(`拼团活动ID: 获取成功 ${tuanActiveId}\n`)
-          } else {
-            console.log(`拼团活动ID：获取失败，将采取脚本内置活动ID\n`)
-          }
-        }
-      }
+      console.log(`拼团活动ID 为空！`)
     } else {
       console.log(`自定义拼团活动ID: 获取成功 ${tuanActiveId}`)
     }
