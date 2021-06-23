@@ -39,7 +39,6 @@ const UA = require('./USER_AGENTS.js').USER_AGENT;
 const URL = 'https://h5.m.jd.com/babelDiy/Zeus/41Lkp7DumXYCFmPYtU3LTcnTTXTX/index.html';
 const REG_SCRIPT = /<script src="([^><]+\/(main\.\w+\.js))\?t=\d+">/gm;
 const REG_ENTRY = /^(.*?\.push\(\[)(\d+,\d+)/;
-const REG_PIN = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
 const KEYWORD_MODULE = 'get_risk_result:';
 const DATA = { appid: '50082', sceneid: 'DDhomePageh5' };
 let smashUtils;
@@ -58,7 +57,7 @@ class ZooFakerNecklace {
     const t = Math.floor(1e6 * Math.random())
       .toString()
       .padEnd(6, '8');
-    const pin = this.cookie.match(REG_PIN)[1];
+    const pin = decodeURIComponent(this.cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
 
     const { log } = smashUtils.get_risk_result({
       id: this.action,
