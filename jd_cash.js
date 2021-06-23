@@ -2,7 +2,7 @@
 签到领现金，每日2毛～5毛
 可互助，助力码每日不变，只变日期
 活动入口：京东APP搜索领现金进入
-更新时间：2021-06-07
+更新时间：2021-06-23
 已支持IOS双京东账号,Node.js支持N个京东账号
 脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
 ============Quantumultx===============
@@ -19,7 +19,7 @@ cron "2 0-23/4 * * *" script-path=jd_cash.js,tag=签到领现金
 
 ============小火箭=========
 签到领现金 = type=cron,script-path=jd_cash.js, cronexpr="2 0-23/4 * * *", timeout=3600, enable=true
- */
+*/
 const $ = new Env('签到领现金');
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
@@ -29,7 +29,7 @@ let jdNotify = true; //是否关闭通知，false打开通知推送，true关闭
 let cookiesArr = [],
   cookie = '',
   message;
-const randomCount = $.isNode() ? 5 : 5;
+const randomCount = $.isNode() ? 20 : 5;
 const inviteCodes = [];
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -100,15 +100,15 @@ let allMessage = '';
     $.done();
   });
 async function jdCash() {
-  $.signMoney = 0;
   await index();
   await shareCodesFormat();
   await helpFriends();
   await getReward();
   await getReward('2');
   await index(true);
-  // await showMsg()
+  await showMsg();
 }
+
 function index(info = false) {
   return new Promise((resolve) => {
     $.get(taskUrl('cash_mob_home'), async (err, resp, data) => {
@@ -127,10 +127,9 @@ function index(info = false) {
                     $.index !== cookiesArr.length ? '\n\n' : ''
                   }`;
                 }
-                console.log(`\n\n当前现金：${data.data.result.signMoney}元`);
+                message += `当前现金：${data.data.result.signMoney}元`;
                 return;
               }
-              $.signMoney = data.data.result.signMoney;
               // console.log(`您的助力码为${data.data.result.inviteCode}`)
               console.log(
                 `\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${data.data.result.inviteCode}\n`
@@ -183,6 +182,7 @@ function index(info = false) {
 async function helpFriends() {
   $.canHelp = true;
   for (let code of $.newShareCodes) {
+    // await $.wait(5000)
     console.log(`去帮助好友${code['inviteCode']}`);
     await helpFriend(code);
     if (!$.canHelp) break;
@@ -367,7 +367,7 @@ function taskUrl(functionId, body = {}) {
           : require('./USER_AGENTS').USER_AGENT
         : $.getdata('JDUA')
         ? $.getdata('JDUA')
-        : 'jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+        : 'jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0',
       'Accept-Language': 'zh-cn',
       'Accept-Encoding': 'gzip, deflate, br',
     },
@@ -392,7 +392,7 @@ function TotalBean() {
             : require('./USER_AGENTS').USER_AGENT
           : $.getdata('JDUA')
           ? $.getdata('JDUA')
-          : 'jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+          : 'jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0',
       },
     };
     $.post(options, (err, resp, data) => {
