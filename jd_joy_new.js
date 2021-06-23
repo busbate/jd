@@ -327,39 +327,46 @@ class JDJRValidator {
           'User-Agent': UA,
         };
         const req = http.get(url, { headers }, (response) => {
-          let res = response;
-          if (res.headers['content-encoding'] === 'gzip') {
-            const unzipStream = new stream.PassThrough();
-            stream.pipeline(response, zlib.createGunzip(), unzipStream, reject);
-            res = unzipStream;
-          }
-          res.setEncoding('utf8');
-
-          let rawData = '';
-
-          res.on('data', (chunk) => (rawData += chunk));
-          res.on('end', () => {
-            try {
-              const ctx = {
-                [fnId]: (data) => (ctx.data = data),
-                data: {},
-              };
-
-              vm.createContext(ctx);
-              vm.runInContext(rawData, ctx);
-
-              // console.log(ctx.data);
-              res.resume();
-              resolve(ctx.data);
-            } catch (e) {
-              reject(e);
+          try {
+            let res = response;
+            if (res.headers['content-encoding'] === 'gzip') {
+              const unzipStream = new stream.PassThrough();
+              stream.pipeline(response, zlib.createGunzip(), unzipStream, reject);
+              res = unzipStream;
             }
-          });
+            res.setEncoding('utf8');
+
+            let rawData = '';
+
+            res.on('data', (chunk) => (rawData += chunk));
+            res.on('end', () => {
+              try {
+                const ctx = {
+                  [fnId]: (data) => (ctx.data = data),
+                  data: {},
+                };
+
+                vm.createContext(ctx);
+                vm.runInContext(rawData, ctx);
+
+                // console.log(ctx.data);
+                res.resume();
+                resolve(ctx.data);
+              } catch (e) {
+                reject('11111:', e);
+              } finally {
+              }
+            });
+          } catch (e) {
+            console.log('22222:', e);
+          } finally {
+          }
         });
         req.on('error', reject);
         req.end();
       } catch (e) {
         console.log('环境不支持');
+      } finally {
       }
     });
   }
