@@ -108,7 +108,6 @@ if ($.isNode()) {
           await $.wait(1000);
         }
       }
-      if ($.canHelp) await joinLeaderTuan();//参团
     }
   }
   if ($.isNode() && allMessage) {
