@@ -936,26 +936,27 @@ async function tuanActivity() {
         if ((tuanInfo && tuanInfo[0]['endTime']) <= QueryTuanRes['nowTime'] && surplusOpenTuanNum > 0) {
           $.log(`之前的团已过期，准备重新开团\n`)
           await CreateTuan();
-        }
-        for (let item of tuanInfo) {
-          const { realTuanNum, tuanNum, userInfo } = item;
-          $.tuanNum = tuanNum || 0;
-          $.log(`\n开团情况:${realTuanNum}/${tuanNum}\n`);
-          if (realTuanNum === tuanNum) {
-            for (let user of userInfo) {
-              if (user.encryptPin === $.encryptPin) {
-                if (user.receiveElectric && user.receiveElectric > 0) {
-                  console.log(`您在${new Date(user.joinTime * 1000).toLocaleString()}开团奖励已经领取成功\n`)
-                  if ($.surplusOpenTuanNum > 0) await CreateTuan();
-                } else {
-                  $.log(`开始领取开团奖励`);
-                  await tuanAward(item.tuanActiveId, item.tuanId);//isTuanLeader
+        }else{
+          for (let item of tuanInfo) {
+            const { realTuanNum, tuanNum, userInfo } = item;
+            $.tuanNum = tuanNum || 0;
+            $.log(`\n开团情况:${realTuanNum}/${tuanNum}\n`);
+            if (realTuanNum === tuanNum) {
+              for (let user of userInfo) {
+                if (user.encryptPin === $.encryptPin) {
+                  if (user.receiveElectric && user.receiveElectric > 0) {
+                    console.log(`您在${new Date(user.joinTime * 1000).toLocaleString()}开团奖励已经领取成功\n`)
+                    if ($.surplusOpenTuanNum > 0) await CreateTuan();
+                  } else {
+                    $.log(`开始领取开团奖励`);
+                    await tuanAward(item.tuanActiveId, item.tuanId);//isTuanLeader
+                  }
                 }
               }
+            } else {
+              $.tuanIds.push(tuanId);
+              $.log(`\n此团未达领取团奖励人数：${tuanNum}人\n`)
             }
-          } else {
-            $.tuanIds.push(tuanId);
-            $.log(`\n此团未达领取团奖励人数：${tuanNum}人\n`)
           }
         }
       }
