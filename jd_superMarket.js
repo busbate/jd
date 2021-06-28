@@ -1324,9 +1324,9 @@ function sortTotalPriceGold(a, b) {
 //格式化助力码
 function shareCodesFormat() {
   return new Promise(resolve => {
-    console.log(`第${$.index}个京东账号的助力码:::${jdSuperMarketShareArr[$.index - 1]}`)
-    if (jdSuperMarketShareArr[$.index - 1]) {
-      newShareCodes = jdSuperMarketShareArr[$.index - 1].split('@');
+    console.log(`第${$.index}个京东账号的助力码:::${jdSuperMarketShareArr[$.index]}`)
+    if (jdSuperMarketShareArr[$.index]) {
+      newShareCodes = jdSuperMarketShareArr[$.index].split('@');
     } else {
       console.log(`由于您未提供与京京东账号相对应的shareCode,下面助力将采纳本脚本自带的助力码\n`)
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);

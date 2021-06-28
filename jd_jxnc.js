@@ -251,8 +251,8 @@ function tokenFormat() {
 function shareCodesFormat() {
   return new Promise(async resolve => {
     // console.log(`第${$.index}个京东账号的助力码:::${jdFruitShareArr[$.index - 1]}`)
-    if (jxncShareCodeArr[$.index - 1]) {
-      currentShareCode = jxncShareCodeArr[$.index - 1].split('@');
+    if (jxncShareCodeArr[$.index]) {
+      currentShareCode = jxncShareCodeArr[$.index].split('@');
       currentShareCode.push(...(shareCode.split('@')));
     } else if (shareCode.length > 1) {
       $.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码`)
