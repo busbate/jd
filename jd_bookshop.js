@@ -40,7 +40,7 @@ ADD_CART = $.isNode()
   : ADD_CART;
 // 加入购物车开关，与东东小窝共享
 
-let inviteCodes = ['d4d6953f83eb48798dc4533daa9f10e1@dbffb1e337174317a6482c237a871bfd@'];
+let inviteCodes = ['d4d6953f83eb48798dc4533daa9f10e1@dbffb1e337174317a6482c237a871bfd'];
 
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -733,8 +733,8 @@ function shareCodesFormat() {
   return new Promise(async (resolve) => {
     // console.log(`第${$.index}个京东账号的助力码:::${$.shareCodesArr[$.index - 1]}`)
     $.newShareCodes = [];
-    if ($.shareCodesArr[$.index]) {
-      $.newShareCodes = $.shareCodesArr[$.index].split('@');
+    if ($.shareCodesArr[$.index - 1]) {
+      $.newShareCodes = $.shareCodesArr[$.index - 1].split('@');
     } else if (inviteCodes.length > 1) {
       console.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码\n`);
       const tempIndex = $.index > inviteCodes.length ? inviteCodes.length - 1 : $.index - 1;
